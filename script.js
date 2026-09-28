@@ -59,8 +59,9 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeSignin();
 });
 
-const dashboardOverlay = document.getElementById('dashboardOverlay');
-const dashboardClose = document.getElementById('dashboardClose');
+const heroPage = document.getElementById('heroPage');
+const dashboardPage = document.getElementById('dashboardPage');
+const dashboardLogout = document.getElementById('dashboardLogout');
 const dashboardOwnerName = document.getElementById('dashboardOwnerName');
 const salesStats = document.getElementById('salesStats');
 const ordersTableBody = document.getElementById('ordersTableBody');
@@ -100,20 +101,17 @@ function renderDashboard() {
 function openDashboard(ownerName) {
   dashboardOwnerName.textContent = `— ${ownerName}`;
   renderDashboard();
-  dashboardOverlay.classList.add('open');
+  heroPage.hidden = true;
+  dashboardPage.hidden = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function closeDashboard() {
-  dashboardOverlay.classList.remove('open');
+  dashboardPage.hidden = true;
+  heroPage.hidden = false;
 }
 
-dashboardClose.addEventListener('click', closeDashboard);
-dashboardOverlay.addEventListener('click', (e) => {
-  if (e.target === dashboardOverlay) closeDashboard();
-});
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeDashboard();
-});
+dashboardLogout.addEventListener('click', closeDashboard);
 
 signinForm.addEventListener('submit', (e) => {
   e.preventDefault();

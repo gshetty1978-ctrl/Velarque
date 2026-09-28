@@ -366,25 +366,56 @@ html, body {
   filter: brightness(1.08);
 }
 
-.dashboard-modal {
-  max-width: 640px;
-  max-height: 85vh;
-  overflow-y: auto;
+.dashboard-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  min-height: calc(100vh - 150px);
 }
 
-.dashboard-modal h2 {
-  font-size: 22px;
-  text-align: left;
+.dashboard-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-page-header h1 {
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 #dashboardOwnerName {
   color: var(--accent);
 }
 
+.dashboard-logout {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 9px 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.dashboard-logout:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .dashboard-grid {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 28px;
 }
 
 .dashboard-panel h3 {

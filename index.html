@@ -55,8 +55,32 @@
   </div>
 </header>
 
-<main class="hero">
+<main class="hero" id="heroPage">
   <p class="hero-sub">Welcome to Velarque — your search starts above.</p>
+</main>
+
+<main class="dashboard-page" id="dashboardPage" hidden>
+  <div class="dashboard-page-header">
+    <h1>Owner Dashboard <span id="dashboardOwnerName"></span></h1>
+    <button class="dashboard-logout" id="dashboardLogout">Log out</button>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="dashboard-panel">
+      <h3>Sales</h3>
+      <div class="sales-stats" id="salesStats"></div>
+    </section>
+
+    <section class="dashboard-panel">
+      <h3>Customer Orders</h3>
+      <table class="orders-table">
+        <thead>
+          <tr><th>Customer</th><th>Item</th><th>Amount</th><th>Status</th></tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+    </section>
+  </div>
 </main>
 
 <footer class="site-footer">
@@ -79,30 +103,6 @@
       <p class="modal-error" id="signinError"></p>
       <button type="submit" class="modal-submit">Sign In</button>
     </form>
-  </div>
-</div>
-
-<div class="modal-overlay" id="dashboardOverlay">
-  <div class="modal dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="dashboardTitle">
-    <button class="modal-close" id="dashboardClose" aria-label="Close">&times;</button>
-    <h2 id="dashboardTitle">Owner Dashboard <span id="dashboardOwnerName"></span></h2>
-
-    <div class="dashboard-grid">
-      <section class="dashboard-panel">
-        <h3>Sales</h3>
-        <div class="sales-stats" id="salesStats"></div>
-      </section>
-
-      <section class="dashboard-panel">
-        <h3>Customer Orders</h3>
-        <table class="orders-table">
-          <thead>
-            <tr><th>Customer</th><th>Item</th><th>Amount</th><th>Status</th></tr>
-          </thead>
-          <tbody id="ordersTableBody"></tbody>
-        </table>
-      </section>
-    </div>
   </div>
 </div>
 
