@@ -1,3 +1,32 @@
+const sliderSlides = document.querySelectorAll('#imageSlider .slide');
+const sliderDotsWrap = document.getElementById('sliderDots');
+let sliderIndex = 0;
+let sliderTimer = null;
+
+if (sliderSlides.length) {
+  sliderSlides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+    dot.addEventListener('click', () => goToSlide(i));
+    sliderDotsWrap.appendChild(dot);
+  });
+
+  function goToSlide(i) {
+    sliderSlides[sliderIndex].classList.remove('active');
+    sliderDotsWrap.children[sliderIndex].classList.remove('active');
+    sliderIndex = i;
+    sliderSlides[sliderIndex].classList.add('active');
+    sliderDotsWrap.children[sliderIndex].classList.add('active');
+  }
+
+  function nextSlide() {
+    goToSlide((sliderIndex + 1) % sliderSlides.length);
+  }
+
+  sliderTimer = setInterval(nextSlide, 4000);
+}
+
 const dotsBtn = document.getElementById('dotsBtn');
 const dropdown = document.getElementById('dropdown');
 
