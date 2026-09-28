@@ -395,6 +395,18 @@ body > main {
   filter: brightness(1.08);
 }
 
+.story-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0 0 14px;
+}
+
+.story-text:last-of-type {
+  margin-bottom: 0;
+}
+
 .blank-page {
   max-width: 900px;
   margin: 0 auto;

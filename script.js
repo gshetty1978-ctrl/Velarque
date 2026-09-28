@@ -308,6 +308,25 @@ function closeMyOrders() {
 
 myOrdersBack.addEventListener('click', closeMyOrders);
 
+const storyOverlay = document.getElementById('storyOverlay');
+const storyClose = document.getElementById('storyClose');
+
+function openStory() {
+  storyOverlay.classList.add('open');
+}
+
+function closeStory() {
+  storyOverlay.classList.remove('open');
+}
+
+storyClose.addEventListener('click', closeStory);
+storyOverlay.addEventListener('click', (e) => {
+  if (e.target === storyOverlay) closeStory();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeStory();
+});
+
 document.querySelectorAll('.dropdown-item').forEach((item) => {
   item.addEventListener('click', () => {
     const action = item.dataset.action;
@@ -320,6 +339,8 @@ document.querySelectorAll('.dropdown-item').forEach((item) => {
       openMyOrders();
     } else if (action === 'logout') {
       logOut();
+    } else if (action === 'more') {
+      openStory();
     }
   });
 });
