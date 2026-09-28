@@ -391,6 +391,15 @@ const PRODUCTS = [
     weight: 'Each',
     image: 'images/slide-cards.jpg',
   },
+  {
+    tag: 'Teddy Bears',
+    title: 'Handmade Teddy Bears',
+    desc: 'Soft, hand-stitched teddy bears made with love, each one one-of-a-kind.',
+    price: 'Rs 450',
+    priceValue: 450,
+    weight: 'Each',
+    image: 'images/product-teddybears.jpg',
+  },
 ];
 
 const productsGrid = document.getElementById('productsGrid');
