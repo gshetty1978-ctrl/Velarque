@@ -59,6 +59,62 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeSignin();
 });
 
+const dashboardOverlay = document.getElementById('dashboardOverlay');
+const dashboardClose = document.getElementById('dashboardClose');
+const dashboardOwnerName = document.getElementById('dashboardOwnerName');
+const salesStats = document.getElementById('salesStats');
+const ordersTableBody = document.getElementById('ordersTableBody');
+
+const SALES_SUMMARY = [
+  { label: "Today's Sales", value: '₹8,420' },
+  { label: "This Month", value: '₹1,64,300' },
+  { label: "Total Orders", value: '312' },
+];
+
+const CUSTOMER_ORDERS = [
+  { customer: 'Aarav Deshmukh', item: 'Silk Scarf Set', amount: '₹2,499', status: 'delivered' },
+  { customer: 'Meera Joshi', item: 'Leather Tote', amount: '₹4,850', status: 'processing' },
+  { customer: 'Rohan Kulkarni', item: 'Velvet Cushion Cover', amount: '₹1,299', status: 'pending' },
+  { customer: 'Sanjana Patil', item: 'Ceramic Vase', amount: '₹1,899', status: 'delivered' },
+  { customer: 'Devansh Rao', item: 'Handloom Throw', amount: '₹3,199', status: 'pending' },
+];
+
+function renderDashboard() {
+  salesStats.innerHTML = SALES_SUMMARY.map((s) => `
+    <div class="stat-card">
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>
+  `).join('');
+
+  ordersTableBody.innerHTML = CUSTOMER_ORDERS.map((o) => `
+    <tr>
+      <td>${o.customer}</td>
+      <td>${o.item}</td>
+      <td>${o.amount}</td>
+      <td><span class="order-status ${o.status}">${o.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+function openDashboard(ownerName) {
+  dashboardOwnerName.textContent = `— ${ownerName}`;
+  renderDashboard();
+  dashboardOverlay.classList.add('open');
+}
+
+function closeDashboard() {
+  dashboardOverlay.classList.remove('open');
+}
+
+dashboardClose.addEventListener('click', closeDashboard);
+dashboardOverlay.addEventListener('click', (e) => {
+  if (e.target === dashboardOverlay) closeDashboard();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeDashboard();
+});
+
 signinForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const user = signinUser.value.trim();
@@ -66,7 +122,10 @@ signinForm.addEventListener('submit', (e) => {
   if (OWNERS[user] && OWNERS[user] === pass) {
     signinError.style.color = '#4caf7d';
     signinError.textContent = `Welcome, ${user}.`;
-    setTimeout(closeSignin, 900);
+    setTimeout(() => {
+      closeSignin();
+      openDashboard(user);
+    }, 700);
   } else {
     signinError.style.color = '#e2685c';
     signinError.textContent = 'Invalid username or password.';

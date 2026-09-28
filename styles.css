@@ -115,6 +115,21 @@ html, body {
 .menu-wrap {
   position: relative;
   justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.delivery-badge {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 6px 14px;
+  white-space: nowrap;
 }
 
 .dots-btn {
@@ -351,6 +366,97 @@ html, body {
   filter: brightness(1.08);
 }
 
+.dashboard-modal {
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.dashboard-modal h2 {
+  font-size: 22px;
+  text-align: left;
+}
+
+#dashboardOwnerName {
+  color: var(--accent);
+}
+
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.dashboard-panel h3 {
+  margin: 0 0 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+}
+
+.sales-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-card .stat-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stat-card .stat-label {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.orders-table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--text-dim);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.orders-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.order-status {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.order-status.delivered { background: rgba(76,175,125,0.15); color: #4caf7d; }
+.order-status.pending { background: rgba(212,175,122,0.15); color: var(--accent); }
+.order-status.processing { background: rgba(90,140,220,0.15); color: #5a8cdc; }
+
 @media (max-width: 720px) {
   .topbar {
     grid-template-columns: auto auto;
@@ -360,4 +466,6 @@ html, body {
   .brand { grid-area: brand; }
   .menu-wrap { grid-area: menu; }
   .search-wrap { grid-area: search; max-width: 100%; }
+  .delivery-badge { display: none; }
+  .sales-stats { grid-template-columns: repeat(3, 1fr); font-size: 12px; }
 }
