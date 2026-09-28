@@ -21,13 +21,17 @@
         <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
         <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <input type="text" placeholder="Search Velarque..." aria-label="Search">
+      <input type="text" id="searchInput" placeholder="Search Velarque..." aria-label="Search">
     </div>
     <p class="tagline">Everything You Need Is Here..</p>
   </div>
 
   <div class="menu-wrap">
     <span class="delivery-badge">We deliver only in Pune</span>
+    <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7H20L18.5 19.5C18.4 20.3 17.7 21 16.9 21H7.1C6.3 21 5.6 20.3 5.5 19.5L4 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 7V5C8 3.3 9.3 2 11 2H13C14.7 2 16 3.3 16 5V7" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span class="cart-badge" id="cartBadge" hidden>0</span>
+    </button>
     <button class="dots-btn" id="dotsBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
       <span class="dot"></span>
       <span class="dot"></span>
@@ -64,6 +68,7 @@
   <p class="hero-sub" id="heroSub">Welcome to Velarque — your search starts above.</p>
 
   <div class="products-grid" id="productsGrid"></div>
+  <p class="empty-state" id="productsEmpty" hidden>No products match your search.</p>
 </main>
 
 <main class="blank-page" id="myOrdersPage" hidden>
@@ -161,6 +166,62 @@
     <h2 id="storyTitle">Our Story</h2>
     <p class="story-text">We started making handcrafted cards, stationary, keychains and many more things since a while.</p>
     <p class="story-text">We were bored at home watching TV so we started this business.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="cartOverlay">
+  <div class="modal cart-modal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <button class="modal-close" id="cartClose" aria-label="Close">&times;</button>
+    <h2 id="cartTitle">Your Cart</h2>
+
+    <div id="cartItems"></div>
+    <p class="empty-state" id="cartEmpty">Your cart is empty.</p>
+
+    <div class="cart-summary" id="cartSummary" hidden>
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">Rs 0</span>
+      </div>
+      <button class="modal-submit" id="checkoutBtn">Checkout</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="checkoutOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <button class="modal-close" id="checkoutClose" aria-label="Close">&times;</button>
+
+    <div id="checkoutFormView">
+      <h2 id="checkoutTitle">Checkout</h2>
+      <form id="checkoutForm">
+        <label>
+          Delivery Address (Pune)
+          <input type="text" id="checkoutAddress" placeholder="e.g. Koregaon Park, Pune" required>
+        </label>
+        <label>
+          Payment Method
+          <select id="checkoutPayment">
+            <option value="cod">Cash on Delivery</option>
+            <option value="upi">UPI (mock)</option>
+            <option value="card">Card (mock)</option>
+          </select>
+        </label>
+        <div class="cart-total-row">
+          <span>Total</span>
+          <span id="checkoutTotal">Rs 0</span>
+        </div>
+        <p class="modal-error" id="checkoutError"></p>
+        <button type="submit" class="modal-submit" id="checkoutSubmitBtn">Place Order</button>
+      </form>
+    </div>
+
+    <div id="checkoutSuccessView" hidden>
+      <div class="checkout-success-icon">&#10003;</div>
+      <h2>Order Placed!</h2>
+      <p class="story-text" id="checkoutOrderId"></p>
+      <p class="story-text">This is a mock checkout — no real payment was made. Your handcrafted goodies will "arrive" in Pune soon.</p>
+      <button class="modal-submit" id="checkoutDoneBtn">Done</button>
+    </div>
   </div>
 </div>
 

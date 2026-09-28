@@ -360,6 +360,7 @@ const PRODUCTS = [
     title: 'Character Keychains',
     desc: 'Handmade acrylic keychains in cute character designs, perfect for bags and keys.',
     price: 'Rs 150',
+    priceValue: 150,
     weight: 'Each',
     image: 'images/slide-keychains.jpg',
   },
@@ -368,6 +369,7 @@ const PRODUCTS = [
     title: 'Handmade Notebooks',
     desc: 'Leather-bound journals with hand-stitched pages, ready for your next big idea.',
     price: 'Rs 350',
+    priceValue: 350,
     weight: 'A5 size',
     image: 'images/slide-notebooks.jpg',
   },
@@ -376,6 +378,7 @@ const PRODUCTS = [
     title: 'Stationery & Accessories',
     desc: 'Washi tapes, pens and sticky notes to brighten up your desk.',
     price: 'Rs 220',
+    priceValue: 220,
     weight: 'Set of 5',
     image: 'images/slide-stationery.jpg',
   },
@@ -384,15 +387,31 @@ const PRODUCTS = [
     title: 'Birthday Cards & Prints',
     desc: 'Hand-illustrated greeting cards for birthdays and every celebration.',
     price: 'Rs 120',
+    priceValue: 120,
     weight: 'Each',
     image: 'images/slide-cards.jpg',
   },
 ];
 
 const productsGrid = document.getElementById('productsGrid');
+const productsEmpty = document.getElementById('productsEmpty');
+const searchInput = document.getElementById('searchInput');
 
-if (productsGrid) {
-  productsGrid.innerHTML = PRODUCTS.map((p, i) => `
+function renderProducts(indices) {
+  if (!productsGrid) return;
+
+  if (indices.length === 0) {
+    productsGrid.style.display = 'none';
+    productsEmpty.style.display = 'block';
+    return;
+  }
+
+  productsGrid.style.display = 'grid';
+  productsEmpty.style.display = 'none';
+
+  productsGrid.innerHTML = indices.map((i) => {
+    const p = PRODUCTS[i];
+    return `
     <div class="product-card">
       <div class="product-card-image">
         <img src="${p.image}" alt="${escapeHtml(p.title)}">
@@ -408,10 +427,12 @@ if (productsGrid) {
         <button class="product-add-btn" data-index="${i}">Add</button>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   productsGrid.querySelectorAll('.product-add-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
+      addToCart(Number(btn.dataset.index));
       btn.textContent = 'Added';
       btn.classList.add('added');
       setTimeout(() => {
@@ -421,3 +442,187 @@ if (productsGrid) {
     });
   });
 }
+
+function filterProducts(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return PRODUCTS.map((_, i) => i);
+  return PRODUCTS
+    .map((p, i) => ({ p, i }))
+    .filter(({ p }) =>
+      p.title.toLowerCase().includes(q) ||
+      p.tag.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q)
+    )
+    .map(({ i }) => i);
+}
+
+if (productsGrid) {
+  renderProducts(filterProducts(''));
+}
+
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    renderProducts(filterProducts(searchInput.value));
+  });
+}
+
+let CART = [];
+
+function addToCart(productIndex) {
+  const existing = CART.find((c) => c.productIndex === productIndex);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    CART.push({ productIndex, qty: 1 });
+  }
+  updateCartBadge();
+}
+
+function cartCount() {
+  return CART.reduce((sum, c) => sum + c.qty, 0);
+}
+
+function cartSubtotal() {
+  return CART.reduce((sum, c) => sum + PRODUCTS[c.productIndex].priceValue * c.qty, 0);
+}
+
+const cartBtn = document.getElementById('cartBtn');
+const cartBadge = document.getElementById('cartBadge');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartClose = document.getElementById('cartClose');
+const cartItemsEl = document.getElementById('cartItems');
+const cartEmpty = document.getElementById('cartEmpty');
+const cartSummary = document.getElementById('cartSummary');
+const cartSubtotalEl = document.getElementById('cartSubtotal');
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+function updateCartBadge() {
+  const count = cartCount();
+  cartBadge.textContent = String(count);
+  cartBadge.hidden = count === 0;
+}
+
+function renderCart() {
+  if (CART.length === 0) {
+    cartItemsEl.innerHTML = '';
+    cartItemsEl.style.display = 'none';
+    cartEmpty.style.display = 'block';
+    cartSummary.hidden = true;
+    return;
+  }
+
+  cartItemsEl.style.display = 'block';
+  cartEmpty.style.display = 'none';
+  cartSummary.hidden = false;
+
+  cartItemsEl.innerHTML = CART.map((c, i) => {
+    const p = PRODUCTS[c.productIndex];
+    return `
+      <div class="cart-item">
+        <img src="${p.image}" alt="${escapeHtml(p.title)}">
+        <div class="cart-item-info">
+          <div class="cart-item-title">${escapeHtml(p.title)}</div>
+          <div class="cart-item-price">Rs ${p.priceValue} x ${c.qty}</div>
+        </div>
+        <div class="cart-qty">
+          <button data-cart-action="dec" data-cart-index="${i}" aria-label="Decrease quantity">&minus;</button>
+          <span>${c.qty}</span>
+          <button data-cart-action="inc" data-cart-index="${i}" aria-label="Increase quantity">+</button>
+        </div>
+        <button class="cart-remove" data-cart-action="remove" data-cart-index="${i}" aria-label="Remove item">&times;</button>
+      </div>
+    `;
+  }).join('');
+
+  cartSubtotalEl.textContent = `Rs ${cartSubtotal()}`;
+
+  cartItemsEl.querySelectorAll('[data-cart-action]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.cartIndex);
+      const action = btn.dataset.cartAction;
+      if (action === 'inc') CART[i].qty += 1;
+      else if (action === 'dec') {
+        CART[i].qty -= 1;
+        if (CART[i].qty <= 0) CART.splice(i, 1);
+      } else if (action === 'remove') {
+        CART.splice(i, 1);
+      }
+      updateCartBadge();
+      renderCart();
+    });
+  });
+}
+
+function openCart() {
+  renderCart();
+  cartOverlay.classList.add('open');
+}
+
+function closeCart() {
+  cartOverlay.classList.remove('open');
+}
+
+cartBtn.addEventListener('click', openCart);
+cartClose.addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', (e) => {
+  if (e.target === cartOverlay) closeCart();
+});
+
+const checkoutOverlay = document.getElementById('checkoutOverlay');
+const checkoutClose = document.getElementById('checkoutClose');
+const checkoutFormView = document.getElementById('checkoutFormView');
+const checkoutSuccessView = document.getElementById('checkoutSuccessView');
+const checkoutForm = document.getElementById('checkoutForm');
+const checkoutTotal = document.getElementById('checkoutTotal');
+const checkoutError = document.getElementById('checkoutError');
+const checkoutSubmitBtn = document.getElementById('checkoutSubmitBtn');
+const checkoutOrderId = document.getElementById('checkoutOrderId');
+const checkoutDoneBtn = document.getElementById('checkoutDoneBtn');
+
+function openCheckout() {
+  if (CART.length === 0) return;
+  closeCart();
+  checkoutFormView.hidden = false;
+  checkoutSuccessView.hidden = true;
+  checkoutError.textContent = '';
+  checkoutTotal.textContent = `Rs ${cartSubtotal()}`;
+  checkoutOverlay.classList.add('open');
+}
+
+function closeCheckout() {
+  checkoutOverlay.classList.remove('open');
+}
+
+checkoutBtn.addEventListener('click', openCheckout);
+checkoutClose.addEventListener('click', closeCheckout);
+checkoutOverlay.addEventListener('click', (e) => {
+  if (e.target === checkoutOverlay) closeCheckout();
+});
+
+checkoutForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  checkoutError.textContent = '';
+  checkoutSubmitBtn.disabled = true;
+  checkoutSubmitBtn.textContent = 'Processing...';
+
+  setTimeout(() => {
+    const orderId = 'VLQ-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+    checkoutOrderId.textContent = `Order #${orderId} · Rs ${cartSubtotal()}`;
+    checkoutFormView.hidden = true;
+    checkoutSuccessView.hidden = false;
+    checkoutSubmitBtn.disabled = false;
+    checkoutSubmitBtn.textContent = 'Place Order';
+    CART = [];
+    updateCartBadge();
+    checkoutForm.reset();
+  }, 1000);
+});
+
+checkoutDoneBtn.addEventListener('click', closeCheckout);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeCart();
+    closeCheckout();
+  }
+});
