@@ -451,11 +451,25 @@ function renderProducts(indices) {
           <span class="product-price">${escapeHtml(p.price)}</span>
           <span class="product-weight">${escapeHtml(p.weight)}</span>
         </div>
+        <div class="size-selector">
+          <button class="size-btn" data-size="S">S</button>
+          <button class="size-btn active" data-size="M">M</button>
+          <button class="size-btn" data-size="L">L</button>
+        </div>
         <button class="product-add-btn" data-index="${i}">Add</button>
       </div>
     </div>
   `;
   }).join('');
+
+  productsGrid.querySelectorAll('.product-card').forEach((card) => {
+    card.querySelectorAll('.size-btn').forEach((sizeBtn) => {
+      sizeBtn.addEventListener('click', () => {
+        card.querySelectorAll('.size-btn').forEach((b) => b.classList.remove('active'));
+        sizeBtn.classList.add('active');
+      });
+    });
+  });
 
   productsGrid.querySelectorAll('.product-add-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -464,7 +478,10 @@ function renderProducts(indices) {
         openSignin();
         return;
       }
-      addToCart(Number(btn.dataset.index));
+      const card = btn.closest('.product-card');
+      const activeSizeBtn = card.querySelector('.size-btn.active');
+      const size = activeSizeBtn ? activeSizeBtn.dataset.size : 'M';
+      addToCart(Number(btn.dataset.index), size);
       btn.textContent = 'Added';
       btn.classList.add('added');
       setTimeout(() => {
@@ -500,12 +517,12 @@ if (searchInput) {
 
 let CART = [];
 
-function addToCart(productIndex) {
-  const existing = CART.find((c) => c.productIndex === productIndex);
+function addToCart(productIndex, size) {
+  const existing = CART.find((c) => c.productIndex === productIndex && c.size === size);
   if (existing) {
     existing.qty += 1;
   } else {
-    CART.push({ productIndex, qty: 1 });
+    CART.push({ productIndex, size, qty: 1 });
   }
   updateCartBadge();
 }
@@ -553,7 +570,7 @@ function renderCart() {
       <div class="cart-item">
         <img src="${p.image}" alt="${escapeHtml(p.title)}">
         <div class="cart-item-info">
-          <div class="cart-item-title">${escapeHtml(p.title)}</div>
+          <div class="cart-item-title">${escapeHtml(p.title)} <span class="cart-item-size">(${escapeHtml(c.size)})</span></div>
           <div class="cart-item-price">Rs ${p.priceValue} x ${c.qty}</div>
         </div>
         <div class="cart-qty">
