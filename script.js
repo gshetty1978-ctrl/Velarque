@@ -108,13 +108,26 @@ document.addEventListener('keydown', (e) => {
 });
 
 const myOrdersItem = document.getElementById('myOrdersItem');
+const signupItem = document.getElementById('signupItem');
+const signinItem = document.getElementById('signinItem');
+const logoutItem = document.getElementById('logoutItem');
 
-function showMyOrdersMenuItem() {
+function setLoggedInMenu() {
   myOrdersItem.hidden = false;
+  signupItem.hidden = true;
+  signinItem.hidden = true;
+  logoutItem.hidden = false;
 }
 
-function hideMyOrdersMenuItem() {
+function setLoggedOutMenu() {
   myOrdersItem.hidden = true;
+  signupItem.hidden = false;
+  signinItem.hidden = false;
+  logoutItem.hidden = true;
+}
+
+function showMyOrdersMenuItem() {
+  setLoggedInMenu();
 }
 
 signupForm.addEventListener('submit', (e) => {
@@ -212,13 +225,11 @@ function openDashboard(ownerName) {
 function closeDashboard() {
   dashboardPage.hidden = true;
   heroPage.hidden = false;
-  hideMyOrdersMenuItem();
 }
-
-dashboardLogout.addEventListener('click', closeDashboard);
 
 const heroSub = document.getElementById('heroSub');
 const welcomeBanner = document.getElementById('welcomeBanner');
+const HERO_DEFAULT_TEXT = heroSub.textContent;
 
 function showWelcomeBanner(name) {
   welcomeBanner.textContent = `Welcome back, ${name}`;
@@ -229,6 +240,17 @@ function greetCustomer(name) {
   heroSub.textContent = `Welcome back, ${name}.`;
   showWelcomeBanner(name);
 }
+
+function logOut() {
+  closeDashboard();
+  closeMyOrders();
+  setLoggedOutMenu();
+  welcomeBanner.hidden = true;
+  welcomeBanner.textContent = '';
+  heroSub.textContent = HERO_DEFAULT_TEXT;
+}
+
+dashboardLogout.addEventListener('click', logOut);
 
 signinForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -290,6 +312,8 @@ document.querySelectorAll('.dropdown-item').forEach((item) => {
       openSignup();
     } else if (action === 'orders') {
       openMyOrders();
+    } else if (action === 'logout') {
+      logOut();
     }
   });
 });
