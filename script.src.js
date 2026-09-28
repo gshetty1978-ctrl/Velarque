@@ -504,8 +504,8 @@ const PRODUCTS = [
   { tag: 'Charms', title: 'Beaded Charms', desc: 'Colourful beaded charms for bags, keys and bracelets.', price: 'Rs 129', priceValue: 129, weight: 'Each', image: 'images/tile-beaded-charms.jpg' },
   { tag: 'Tags', title: 'Name Tags', desc: 'Handwritten name tags to personalise gifts and bags.', price: 'Rs 69', priceValue: 69, weight: 'Each', image: 'images/tile-name-tags.jpg' },
   { tag: 'Gifting', title: 'Mini Gift Boxes', desc: 'Tiny handcrafted gift boxes for the sweetest surprises.', price: 'Rs 99', priceValue: 99, weight: 'Each', image: 'images/tile-mini-gift-boxes.jpg' },
-  { tag: 'Blind Bags', title: 'Blind Bags', desc: 'Mystery bags of handmade goodies — a surprise every time.', price: 'Rs 199', priceValue: 199, weight: 'Each', image: 'images/tile-blind-bags.jpg' },
-  { tag: 'Blind Boxes', title: 'Blind Boxes', desc: 'Mystery boxes packed with a handpicked handmade surprise.', price: 'Rs 40 - 60', priceValue: 50, sizePrices: { S: 40, M: 50, L: 60 }, weight: 'Each', image: 'images/tile-blind-boxes.jpg' },
+  { tag: 'Blind Bags', title: 'Blind Bags', desc: 'Mystery bags of handmade goodies — a surprise every time.', price: 'Rs 199', priceValue: 199, weight: 'Each', hasSizes: true, image: 'images/tile-blind-bags.jpg' },
+  { tag: 'Blind Boxes', title: 'Blind Boxes', desc: 'Mystery boxes packed with a handpicked handmade surprise.', price: 'Rs 40 - 60', priceValue: 50, sizePrices: { S: 40, M: 50, L: 60 }, weight: 'Each', hasSizes: true, image: 'images/tile-blind-boxes.jpg' },
   { tag: 'Squishies', title: 'Squishy-Themed Crafts', desc: 'Soft, squishy handmade characters to squeeze and collect.', price: 'Rs 179', priceValue: 179, weight: 'Each', image: 'images/tile-squishy-themed-crafts.jpg' },
   { tag: 'Phone Decor', title: 'Phone Decorations', desc: 'Bow charms and beaded chains to dress up your phone.', price: 'Rs 60', priceValue: 60, weight: 'Each', image: 'images/tile-phone-decorations.jpg' },
   { tag: 'Phone Decor', title: 'Phone Charms', desc: 'Beaded phone charms in playful colours and shapes.', price: 'Rs 129', priceValue: 129, weight: 'Each', image: 'images/tile-phone-charms.jpg' },
@@ -552,11 +552,13 @@ function renderProducts(indices) {
           <span class="product-price">${escapeHtml(p.price)}</span>
           <span class="product-weight">${escapeHtml(p.weight)}</span>
         </div>
+        ${p.hasSizes ? `
         <div class="size-selector">
           <button class="size-btn" data-size="S">S</button>
           <button class="size-btn active" data-size="M">M</button>
           <button class="size-btn" data-size="L">L</button>
         </div>
+        ` : ''}
         <button class="product-add-btn" data-index="${i}">Add</button>
       </div>
     </div>
@@ -580,7 +582,7 @@ function renderProducts(indices) {
       }
       const card = btn.closest('.product-card');
       const activeSizeBtn = card.querySelector('.size-btn.active');
-      const size = activeSizeBtn ? activeSizeBtn.dataset.size : 'M';
+      const size = activeSizeBtn ? activeSizeBtn.dataset.size : null;
       addToCart(Number(btn.dataset.index), size);
       btn.textContent = 'Added';
       btn.classList.add('added');
@@ -681,7 +683,7 @@ function renderCart() {
         <div class="cart-item-info">
           <div class="cart-item-title">${escapeHtml(p.title)}</div>
           <div class="cart-item-price">Rs ${getUnitPrice(c.productIndex, c.size)} x ${c.qty}</div>
-          <select class="cart-size-select" data-cart-index="${i}" aria-label="Change size">${sizeOptions}</select>
+          ${p.hasSizes ? `<select class="cart-size-select" data-cart-index="${i}" aria-label="Change size">${sizeOptions}</select>` : ''}
         </div>
         <div class="cart-qty">
           <button data-cart-action="dec" data-cart-index="${i}" aria-label="Decrease quantity">&minus;</button>
@@ -786,7 +788,7 @@ checkoutForm.addEventListener('submit', (e) => {
   setTimeout(() => {
     const orderId = 'VLQ-' + Math.random().toString(36).slice(2, 8).toUpperCase();
     const total = cartSubtotal();
-    const itemSummary = CART.map((c) => `${PRODUCTS[c.productIndex].title} (${c.size}) x${c.qty}`).join(', ');
+    const itemSummary = CART.map((c) => `${PRODUCTS[c.productIndex].title}${c.size ? ` (${c.size})` : ''} x${c.qty}`).join(', ');
 
     saveOrder({
       orderId,
