@@ -108,12 +108,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 const myOrdersItem = document.getElementById('myOrdersItem');
+const myOrdersLabel = document.getElementById('myOrdersLabel');
 const signupItem = document.getElementById('signupItem');
 const signinItem = document.getElementById('signinItem');
 const logoutItem = document.getElementById('logoutItem');
 
-function setLoggedInMenu() {
+function setLoggedInMenu(label) {
   myOrdersItem.hidden = false;
+  myOrdersLabel.textContent = label;
   signupItem.hidden = true;
   signinItem.hidden = true;
   logoutItem.hidden = false;
@@ -124,10 +126,6 @@ function setLoggedOutMenu() {
   signupItem.hidden = false;
   signinItem.hidden = false;
   logoutItem.hidden = true;
-}
-
-function showMyOrdersMenuItem() {
-  setLoggedInMenu();
 }
 
 signupForm.addEventListener('submit', (e) => {
@@ -146,7 +144,7 @@ signupForm.addEventListener('submit', (e) => {
   });
   signupError.style.color = '#4caf7d';
   signupError.textContent = 'Signed up successfully.';
-  showMyOrdersMenuItem();
+  setLoggedInMenu('My Orders');
   setTimeout(closeSignup, 900);
 });
 
@@ -241,7 +239,10 @@ function greetCustomer(name) {
   showWelcomeBanner(name);
 }
 
+let currentOwner = null;
+
 function logOut() {
+  currentOwner = null;
   closeDashboard();
   closeMyOrders();
   setLoggedOutMenu();
@@ -262,8 +263,9 @@ signinForm.addEventListener('submit', (e) => {
     signinError.textContent = `Welcome, ${user}.`;
     setTimeout(() => {
       closeSignin();
+      currentOwner = user;
       showWelcomeBanner(user);
-      showMyOrdersMenuItem();
+      setLoggedInMenu('Customer Orders');
       openDashboard(user);
     }, 700);
     return;
@@ -276,7 +278,7 @@ signinForm.addEventListener('submit', (e) => {
     setTimeout(() => {
       closeSignin();
       greetCustomer(account.name);
-      showMyOrdersMenuItem();
+      setLoggedInMenu('My Orders');
     }, 700);
     return;
   }
@@ -289,6 +291,10 @@ const myOrdersPage = document.getElementById('myOrdersPage');
 const myOrdersBack = document.getElementById('myOrdersBack');
 
 function openMyOrders() {
+  if (currentOwner) {
+    openDashboard(currentOwner);
+    return;
+  }
   heroPage.hidden = true;
   dashboardPage.hidden = true;
   myOrdersPage.hidden = false;
