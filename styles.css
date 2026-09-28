@@ -65,6 +65,18 @@ html, body {
   max-width: 520px;
 }
 
+.welcome-banner {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  color: var(--accent);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13.5px;
+  padding: 8px 20px;
+  margin-bottom: 10px;
+}
+
 .search-bar {
   display: flex;
   align-items: center;
@@ -368,6 +380,13 @@ html, body {
 
 .modal-submit:hover {
   filter: brightness(1.08);
+}
+
+.blank-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  min-height: calc(100vh - 150px);
 }
 
 .dashboard-page {

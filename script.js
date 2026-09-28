@@ -107,6 +107,16 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeSignup();
 });
 
+const myOrdersItem = document.getElementById('myOrdersItem');
+
+function showMyOrdersMenuItem() {
+  myOrdersItem.hidden = false;
+}
+
+function hideMyOrdersMenuItem() {
+  myOrdersItem.hidden = true;
+}
+
 signupForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const email = signupEmail.value.trim();
@@ -123,6 +133,7 @@ signupForm.addEventListener('submit', (e) => {
   });
   signupError.style.color = '#4caf7d';
   signupError.textContent = 'Signed up successfully.';
+  showMyOrdersMenuItem();
   setTimeout(closeSignup, 900);
 });
 
@@ -201,14 +212,22 @@ function openDashboard(ownerName) {
 function closeDashboard() {
   dashboardPage.hidden = true;
   heroPage.hidden = false;
+  hideMyOrdersMenuItem();
 }
 
 dashboardLogout.addEventListener('click', closeDashboard);
 
 const heroSub = document.getElementById('heroSub');
+const welcomeBanner = document.getElementById('welcomeBanner');
+
+function showWelcomeBanner(name) {
+  welcomeBanner.textContent = `Welcome back, ${name}`;
+  welcomeBanner.hidden = false;
+}
 
 function greetCustomer(name) {
   heroSub.textContent = `Welcome back, ${name}.`;
+  showWelcomeBanner(name);
 }
 
 signinForm.addEventListener('submit', (e) => {
@@ -221,6 +240,8 @@ signinForm.addEventListener('submit', (e) => {
     signinError.textContent = `Welcome, ${user}.`;
     setTimeout(() => {
       closeSignin();
+      showWelcomeBanner(user);
+      showMyOrdersMenuItem();
       openDashboard(user);
     }, 700);
     return;
@@ -233,6 +254,7 @@ signinForm.addEventListener('submit', (e) => {
     setTimeout(() => {
       closeSignin();
       greetCustomer(account.name);
+      showMyOrdersMenuItem();
     }, 700);
     return;
   }
@@ -240,6 +262,23 @@ signinForm.addEventListener('submit', (e) => {
   signinError.style.color = '#e2685c';
   signinError.textContent = 'Invalid username or password.';
 });
+
+const myOrdersPage = document.getElementById('myOrdersPage');
+const myOrdersBack = document.getElementById('myOrdersBack');
+
+function openMyOrders() {
+  heroPage.hidden = true;
+  dashboardPage.hidden = true;
+  myOrdersPage.hidden = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeMyOrders() {
+  myOrdersPage.hidden = true;
+  heroPage.hidden = false;
+}
+
+myOrdersBack.addEventListener('click', closeMyOrders);
 
 document.querySelectorAll('.dropdown-item').forEach((item) => {
   item.addEventListener('click', () => {
@@ -249,6 +288,8 @@ document.querySelectorAll('.dropdown-item').forEach((item) => {
       openSignin();
     } else if (action === 'signup') {
       openSignup();
+    } else if (action === 'orders') {
+      openMyOrders();
     }
   });
 });
