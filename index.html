@@ -58,6 +58,29 @@
   <p class="hero-sub">Welcome to Velarque — your search starts above.</p>
 </main>
 
+<footer class="site-footer">
+  Kiaan Ganesh Shetty &middot; <span id="footerDate"></span>
+</footer>
+
+<div class="modal-overlay" id="signinOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="signinTitle">
+    <button class="modal-close" id="signinClose" aria-label="Close">&times;</button>
+    <h2 id="signinTitle">Owner Sign In</h2>
+    <form id="signinForm">
+      <label>
+        Username
+        <input type="text" id="signinUser" autocomplete="username" required>
+      </label>
+      <label>
+        Password
+        <input type="password" id="signinPass" autocomplete="current-password" required>
+      </label>
+      <p class="modal-error" id="signinError"></p>
+      <button type="submit" class="modal-submit">Sign In</button>
+    </form>
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
