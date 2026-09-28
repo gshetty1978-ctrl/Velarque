@@ -65,6 +65,7 @@ const signupForm = document.getElementById('signupForm');
 const signupName = document.getElementById('signupName');
 const signupEmail = document.getElementById('signupEmail');
 const signupNumber = document.getElementById('signupNumber');
+const signupPassword = document.getElementById('signupPassword');
 const signupError = document.getElementById('signupError');
 
 const SIGNUPS_KEY = 'velarque_signups';
@@ -81,6 +82,10 @@ function saveSignup(entry) {
   const signups = getSignups();
   signups.push(entry);
   localStorage.setItem(SIGNUPS_KEY, JSON.stringify(signups));
+}
+
+function findSignupByEmail(email) {
+  return getSignups().find((s) => s.email.toLowerCase() === email.toLowerCase());
 }
 
 function openSignup() {
@@ -104,10 +109,17 @@ document.addEventListener('keydown', (e) => {
 
 signupForm.addEventListener('submit', (e) => {
   e.preventDefault();
+  const email = signupEmail.value.trim();
+  if (findSignupByEmail(email)) {
+    signupError.style.color = '#e2685c';
+    signupError.textContent = 'An account with this email already exists.';
+    return;
+  }
   saveSignup({
     name: signupName.value.trim(),
-    email: signupEmail.value.trim(),
+    email,
     number: signupNumber.value.trim(),
+    password: signupPassword.value,
   });
   signupError.style.color = '#4caf7d';
   signupError.textContent = 'Signed up successfully.';
@@ -193,10 +205,17 @@ function closeDashboard() {
 
 dashboardLogout.addEventListener('click', closeDashboard);
 
+const heroSub = document.getElementById('heroSub');
+
+function greetCustomer(name) {
+  heroSub.textContent = `Welcome back, ${name}.`;
+}
+
 signinForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const user = signinUser.value.trim();
   const pass = signinPass.value;
+
   if (OWNERS[user] && OWNERS[user] === pass) {
     signinError.style.color = '#4caf7d';
     signinError.textContent = `Welcome, ${user}.`;
@@ -204,10 +223,22 @@ signinForm.addEventListener('submit', (e) => {
       closeSignin();
       openDashboard(user);
     }, 700);
-  } else {
-    signinError.style.color = '#e2685c';
-    signinError.textContent = 'Invalid username or password.';
+    return;
   }
+
+  const account = findSignupByEmail(user);
+  if (account && account.password === pass) {
+    signinError.style.color = '#4caf7d';
+    signinError.textContent = `Welcome back, ${account.name}.`;
+    setTimeout(() => {
+      closeSignin();
+      greetCustomer(account.name);
+    }, 700);
+    return;
+  }
+
+  signinError.style.color = '#e2685c';
+  signinError.textContent = 'Invalid username or password.';
 });
 
 document.querySelectorAll('.dropdown-item').forEach((item) => {

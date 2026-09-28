@@ -56,7 +56,7 @@
 </header>
 
 <main class="hero" id="heroPage">
-  <p class="hero-sub">Welcome to Velarque — your search starts above.</p>
+  <p class="hero-sub" id="heroSub">Welcome to Velarque — your search starts above.</p>
 </main>
 
 <main class="dashboard-page" id="dashboardPage" hidden>
@@ -104,7 +104,7 @@
     <h2 id="signinTitle">Sign In</h2>
     <form id="signinForm">
       <label>
-        Username
+        Username / Email
         <input type="text" id="signinUser" autocomplete="username" required>
       </label>
       <label>
@@ -133,6 +133,10 @@
       <label>
         Number
         <input type="tel" id="signupNumber" autocomplete="tel" pattern="[0-9+ ]{7,15}" required>
+      </label>
+      <label>
+        Password
+        <input type="password" id="signupPassword" autocomplete="new-password" minlength="4" required>
       </label>
       <p class="modal-error" id="signupError"></p>
       <button type="submit" class="modal-submit">Sign Up</button>
