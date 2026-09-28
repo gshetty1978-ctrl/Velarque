@@ -249,9 +249,9 @@ body > main {
 .slider {
   position: relative;
   width: 100%;
-  height: 62vh;
-  min-height: 420px;
-  max-height: 640px;
+  height: 48vh;
+  min-height: 320px;
+  max-height: 480px;
   overflow: hidden;
   background: var(--bg-elev);
 }
@@ -267,22 +267,43 @@ body > main {
   opacity: 1;
 }
 
-.slide-bg {
+.slide-fg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(30px) brightness(0.55);
-  transform: scale(1.15);
+  object-position: center 55%;
 }
 
-.slide-fg {
-  position: relative;
+.slide-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 60px 36px 28px;
+  background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0));
+}
+
+.slide-eyebrow {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 6px;
+}
+
+.slide-caption h2 {
+  margin: 0;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .slider-dots {
