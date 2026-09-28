@@ -353,3 +353,71 @@ if (footerDate) {
     day: 'numeric',
   });
 }
+
+const PRODUCTS = [
+  {
+    tag: 'Keychains',
+    title: 'Character Keychains',
+    desc: 'Handmade acrylic keychains in cute character designs, perfect for bags and keys.',
+    price: 'Rs 150',
+    weight: 'Each',
+    image: 'images/slide-keychains.jpg',
+  },
+  {
+    tag: 'Notebooks',
+    title: 'Handmade Notebooks',
+    desc: 'Leather-bound journals with hand-stitched pages, ready for your next big idea.',
+    price: 'Rs 350',
+    weight: 'A5 size',
+    image: 'images/slide-notebooks.jpg',
+  },
+  {
+    tag: 'Stationery',
+    title: 'Stationery & Accessories',
+    desc: 'Washi tapes, pens and sticky notes to brighten up your desk.',
+    price: 'Rs 220',
+    weight: 'Set of 5',
+    image: 'images/slide-stationery.jpg',
+  },
+  {
+    tag: 'Cards',
+    title: 'Birthday Cards & Prints',
+    desc: 'Hand-illustrated greeting cards for birthdays and every celebration.',
+    price: 'Rs 120',
+    weight: 'Each',
+    image: 'images/slide-cards.jpg',
+  },
+];
+
+const productsGrid = document.getElementById('productsGrid');
+
+if (productsGrid) {
+  productsGrid.innerHTML = PRODUCTS.map((p, i) => `
+    <div class="product-card">
+      <div class="product-card-image">
+        <img src="${p.image}" alt="${escapeHtml(p.title)}">
+      </div>
+      <div class="product-card-body">
+        <span class="product-tag">${escapeHtml(p.tag)}</span>
+        <h3 class="product-title">${escapeHtml(p.title)}</h3>
+        <p class="product-desc">${escapeHtml(p.desc)}</p>
+        <div class="product-meta">
+          <span class="product-price">${escapeHtml(p.price)}</span>
+          <span class="product-weight">${escapeHtml(p.weight)}</span>
+        </div>
+        <button class="product-add-btn" data-index="${i}">Add</button>
+      </div>
+    </div>
+  `).join('');
+
+  productsGrid.querySelectorAll('.product-add-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btn.textContent = 'Added';
+      btn.classList.add('added');
+      setTimeout(() => {
+        btn.textContent = 'Add';
+        btn.classList.remove('added');
+      }, 1200);
+    });
+  });
+}
