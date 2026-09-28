@@ -203,6 +203,10 @@ body > main {
   transform: translateY(0) scale(1);
 }
 
+.dropdown-item[hidden] {
+  display: none;
+}
+
 .dropdown-item {
   display: flex;
   align-items: center;
