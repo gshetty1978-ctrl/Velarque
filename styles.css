@@ -45,18 +45,39 @@
   font-family: 'Poppins', sans-serif;
   font-size: 13.5px;
   font-weight: 500;
-  padding: 12px 22px;
+  padding: 10px 14px 10px 22px;
   border-radius: 999px;
   box-shadow: var(--shadow);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
 }
 
 .toast.show {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
+}
+
+.toast-action {
+  background: var(--accent);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.toast-action:hover {
+  filter: brightness(1.08);
 }
 
 html {

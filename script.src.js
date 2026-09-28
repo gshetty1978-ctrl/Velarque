@@ -1,13 +1,46 @@
 const toast = document.getElementById('toast');
 let toastTimer = null;
 
+function hideToast() {
+  toast.classList.remove('show');
+}
+
 function showToast(message) {
+  toast.innerHTML = '';
   toast.textContent = message;
   toast.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2200);
+  toastTimer = setTimeout(hideToast, 2200);
+}
+
+function showAuthPrompt(message) {
+  clearTimeout(toastTimer);
+  toast.innerHTML = '';
+
+  const text = document.createElement('span');
+  text.textContent = message;
+  toast.appendChild(text);
+
+  const signinBtn = document.createElement('button');
+  signinBtn.className = 'toast-action';
+  signinBtn.textContent = 'Sign In';
+  signinBtn.addEventListener('click', () => {
+    hideToast();
+    openSignin();
+  });
+  toast.appendChild(signinBtn);
+
+  const signupBtn = document.createElement('button');
+  signupBtn.className = 'toast-action';
+  signupBtn.textContent = 'Sign Up';
+  signupBtn.addEventListener('click', () => {
+    hideToast();
+    openSignup();
+  });
+  toast.appendChild(signupBtn);
+
+  toast.classList.add('show');
+  toastTimer = setTimeout(hideToast, 6000);
 }
 
 const dotsBtn = document.getElementById('dotsBtn');
@@ -559,8 +592,7 @@ function renderProducts(indices) {
   productsGrid.querySelectorAll('.product-add-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       if (cartBtn.hidden) {
-        showToast('Please sign up or sign in first');
-        openSignin();
+        showAuthPrompt('Please sign in or sign up first');
         return;
       }
       const card = btn.closest('.product-card');
