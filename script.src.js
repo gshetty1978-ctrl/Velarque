@@ -505,9 +505,9 @@ const PRODUCTS = [
   { tag: 'Tags', title: 'Name Tags', desc: 'Handwritten name tags to personalise gifts and bags.', price: 'Rs 69', priceValue: 69, weight: 'Each', image: 'images/tile-name-tags.jpg' },
   { tag: 'Gifting', title: 'Mini Gift Boxes', desc: 'Tiny handcrafted gift boxes for the sweetest surprises.', price: 'Rs 99', priceValue: 99, weight: 'Each', image: 'images/tile-mini-gift-boxes.jpg' },
   { tag: 'Blind Bags', title: 'Blind Bags', desc: 'Mystery bags of handmade goodies — a surprise every time.', price: 'Rs 199', priceValue: 199, weight: 'Each', image: 'images/tile-blind-bags.jpg' },
-  { tag: 'Blind Boxes', title: 'Blind Boxes', desc: 'Mystery boxes packed with a handpicked handmade surprise.', price: 'Rs 249', priceValue: 249, weight: 'Each', image: 'images/tile-blind-boxes.jpg' },
+  { tag: 'Blind Boxes', title: 'Blind Boxes', desc: 'Mystery boxes packed with a handpicked handmade surprise.', price: 'Rs 40 - 60', priceValue: 50, sizePrices: { S: 40, M: 50, L: 60 }, weight: 'Each', image: 'images/tile-blind-boxes.jpg' },
   { tag: 'Squishies', title: 'Squishy-Themed Crafts', desc: 'Soft, squishy handmade characters to squeeze and collect.', price: 'Rs 179', priceValue: 179, weight: 'Each', image: 'images/tile-squishy-themed-crafts.jpg' },
-  { tag: 'Phone Decor', title: 'Phone Decorations', desc: 'Bow charms and beaded chains to dress up your phone.', price: 'Rs 149', priceValue: 149, weight: 'Each', image: 'images/tile-phone-decorations.jpg' },
+  { tag: 'Phone Decor', title: 'Phone Decorations', desc: 'Bow charms and beaded chains to dress up your phone.', price: 'Rs 60', priceValue: 60, weight: 'Each', image: 'images/tile-phone-decorations.jpg' },
   { tag: 'Phone Decor', title: 'Phone Charms', desc: 'Beaded phone charms in playful colours and shapes.', price: 'Rs 129', priceValue: 129, weight: 'Each', image: 'images/tile-phone-charms.jpg' },
   { tag: 'Custom', title: 'Custom Letters', desc: 'Handwritten custom letters — price depends on what you want.', price: 'Price on request', priceValue: 199, weight: 'Each', image: 'images/tile-custom-letters.jpg' },
   { tag: 'Custom', title: 'Personalised Cards', desc: 'Cards personalised with your own message and design.', price: 'Rs 149', priceValue: 149, weight: 'Each', image: 'images/tile-personalised-cards.jpg' },
@@ -617,6 +617,12 @@ if (searchInput) {
 
 let CART = [];
 
+function getUnitPrice(productIndex, size) {
+  const p = PRODUCTS[productIndex];
+  if (p.sizePrices && p.sizePrices[size] != null) return p.sizePrices[size];
+  return p.priceValue;
+}
+
 function addToCart(productIndex, size) {
   const existing = CART.find((c) => c.productIndex === productIndex && c.size === size);
   if (existing) {
@@ -632,7 +638,7 @@ function cartCount() {
 }
 
 function cartSubtotal() {
-  return CART.reduce((sum, c) => sum + PRODUCTS[c.productIndex].priceValue * c.qty, 0);
+  return CART.reduce((sum, c) => sum + getUnitPrice(c.productIndex, c.size) * c.qty, 0);
 }
 
 const cartBtn = document.getElementById('cartBtn');
@@ -674,7 +680,7 @@ function renderCart() {
         <img src="${p.image}" alt="${escapeHtml(p.title)}">
         <div class="cart-item-info">
           <div class="cart-item-title">${escapeHtml(p.title)}</div>
-          <div class="cart-item-price">Rs ${p.priceValue} x ${c.qty}</div>
+          <div class="cart-item-price">Rs ${getUnitPrice(c.productIndex, c.size)} x ${c.qty}</div>
           <select class="cart-size-select" data-cart-index="${i}" aria-label="Change size">${sizeOptions}</select>
         </div>
         <div class="cart-qty">
