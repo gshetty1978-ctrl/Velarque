@@ -1,3 +1,15 @@
+const toast = document.getElementById('toast');
+let toastTimer = null;
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2200);
+}
+
 const dotsBtn = document.getElementById('dotsBtn');
 const dropdown = document.getElementById('dropdown');
 
@@ -119,6 +131,7 @@ function setLoggedInMenu(label) {
   signupItem.hidden = true;
   signinItem.hidden = true;
   logoutItem.hidden = false;
+  cartBtn.hidden = false;
 }
 
 function setLoggedOutMenu() {
@@ -126,6 +139,7 @@ function setLoggedOutMenu() {
   signupItem.hidden = false;
   signinItem.hidden = false;
   logoutItem.hidden = true;
+  cartBtn.hidden = true;
 }
 
 signupForm.addEventListener('submit', (e) => {
@@ -249,6 +263,10 @@ function logOut() {
   welcomeBanner.hidden = true;
   welcomeBanner.textContent = '';
   heroSub.textContent = HERO_DEFAULT_TEXT;
+  CART = [];
+  updateCartBadge();
+  closeCart();
+  closeCheckout();
 }
 
 dashboardLogout.addEventListener('click', logOut);
@@ -441,6 +459,11 @@ function renderProducts(indices) {
 
   productsGrid.querySelectorAll('.product-add-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (cartBtn.hidden) {
+        showToast('Please sign up or sign in first');
+        openSignin();
+        return;
+      }
       addToCart(Number(btn.dataset.index));
       btn.textContent = 'Added';
       btn.classList.add('added');

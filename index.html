@@ -11,6 +11,8 @@
 </head>
 <body>
 
+<div class="toast" id="toast"></div>
+
 <header class="topbar">
   <div class="brand">Velarque</div>
 
@@ -28,7 +30,7 @@
 
   <div class="menu-wrap">
     <span class="delivery-badge">We deliver only in Pune</span>
-    <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+    <button class="cart-btn" id="cartBtn" aria-label="Open cart" hidden>
       <svg viewBox="0 0 24 24" fill="none"><path d="M4 7H20L18.5 19.5C18.4 20.3 17.7 21 16.9 21H7.1C6.3 21 5.6 20.3 5.5 19.5L4 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 7V5C8 3.3 9.3 2 11 2H13C14.7 2 16 3.3 16 5V7" stroke="currentColor" stroke-width="1.6"/></svg>
       <span class="cart-badge" id="cartBadge" hidden>0</span>
     </button>
