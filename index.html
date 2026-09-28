@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velarque</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Velarque</div>
+
+  <div class="search-wrap">
+    <div class="search-bar">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input type="text" placeholder="Search Velarque..." aria-label="Search">
+    </div>
+    <p class="tagline">Everything You Need Is Here..</p>
+  </div>
+
+  <div class="menu-wrap">
+    <button class="dots-btn" id="dotsBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </button>
+
+    <div class="dropdown" id="dropdown">
+      <button class="dropdown-item" data-action="orders">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7H20L18.5 19.5C18.4 20.3 17.7 21 16.9 21H7.1C6.3 21 5.6 20.3 5.5 19.5L4 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 7V5C8 3.3 9.3 2 11 2H13C14.7 2 16 3.3 16 5V7" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span>Orders</span>
+      </button>
+      <button class="dropdown-item" data-action="more">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="4" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="10" width="18" height="4" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="16" width="18" height="4" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span>More</span>
+      </button>
+      <div class="dropdown-divider"></div>
+      <button class="dropdown-item" data-action="signup">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 20c1.2-3.6 4.2-5.5 7.5-5.5s6.3 1.9 7.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 5v4M21 7h-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>Sign up</span>
+      </button>
+      <button class="dropdown-item" data-action="signin">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M10 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M15 8l4 4-4 4M19 12H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Sign in</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="hero">
+  <p class="hero-sub">Welcome to Velarque — your search starts above.</p>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
