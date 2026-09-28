@@ -112,6 +112,19 @@ function saveOrder(entry) {
   localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 }
 
+function updateOrderStatus(orderId, status) {
+  const orders = getOrders();
+  const order = orders.find((o) => o.orderId === orderId);
+  if (order) {
+    order.status = status;
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+  }
+}
+
+function getOrdersForCustomer(name) {
+  return getOrders().filter((o) => o.customer === name);
+}
+
 function findSignupByEmail(email) {
   return getSignups().find((s) => s.email.toLowerCase() === email.toLowerCase());
 }
@@ -218,23 +231,37 @@ function renderDashboard() {
   `).join('');
 
   const liveOrders = getOrders().map((o) => ({
+    orderId: o.orderId,
     customer: o.customer,
     item: o.item,
     notes: o.notes,
     amount: `₹${o.amount}`,
-    status: 'pending',
+    status: o.status || 'pending',
+    live: true,
   }));
 
   const allOrders = liveOrders.concat(CUSTOMER_ORDERS);
+  const statusOptions = ['pending', 'processing', 'delivered', 'cancelled'];
 
   ordersTableBody.innerHTML = allOrders.map((o) => `
     <tr>
       <td>${escapeHtml(o.customer)}</td>
       <td>${escapeHtml(o.item)}${o.notes ? `<div class="order-note">Note: ${escapeHtml(o.notes)}</div>` : ''}</td>
       <td>${escapeHtml(o.amount)}</td>
-      <td><span class="order-status ${o.status}">${o.status}</span></td>
+      <td>${o.live
+          ? `<select class="order-status-select" data-order-id="${escapeHtml(o.orderId)}">
+              ${statusOptions.map((s) => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>`
+          : `<span class="order-status ${o.status}">${o.status}</span>`
+        }</td>
     </tr>
   `).join('');
+
+  ordersTableBody.querySelectorAll('.order-status-select').forEach((select) => {
+    select.addEventListener('change', () => {
+      updateOrderStatus(select.dataset.orderId, select.value);
+    });
+  });
 
   const signups = getSignups();
   if (signups.length === 0) {
@@ -335,11 +362,42 @@ signinForm.addEventListener('submit', (e) => {
 const myOrdersPage = document.getElementById('myOrdersPage');
 const myOrdersBack = document.getElementById('myOrdersBack');
 
+const myOrdersList = document.getElementById('myOrdersList');
+const myOrdersEmpty = document.getElementById('myOrdersEmpty');
+
+function renderMyOrders() {
+  const orders = getOrdersForCustomer(currentUserName);
+  if (orders.length === 0) {
+    myOrdersList.innerHTML = '';
+    myOrdersList.style.display = 'none';
+    myOrdersEmpty.style.display = 'block';
+    return;
+  }
+
+  myOrdersList.style.display = 'block';
+  myOrdersEmpty.style.display = 'none';
+
+  myOrdersList.innerHTML = orders.map((o) => `
+    <div class="my-order-card">
+      <div class="my-order-card-header">
+        <span class="my-order-id">#${escapeHtml(o.orderId)}</span>
+        <span class="my-order-date">${new Date(o.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+      </div>
+      <div class="my-order-items">${escapeHtml(o.item)}</div>
+      <div class="my-order-footer">
+        <span class="my-order-amount">Rs ${o.amount}</span>
+        <span class="order-status ${o.status || 'pending'}">${o.status || 'pending'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
 function openMyOrders() {
   if (currentOwner) {
     openDashboard(currentOwner);
     return;
   }
+  renderMyOrders();
   heroPage.hidden = true;
   dashboardPage.hidden = true;
   myOrdersPage.hidden = false;
@@ -716,6 +774,7 @@ checkoutForm.addEventListener('submit', (e) => {
       amount: total,
       address: checkoutAddress.value.trim(),
       notes: checkoutNotes.value.trim(),
+      status: 'pending',
       date: new Date().toISOString(),
     });
 

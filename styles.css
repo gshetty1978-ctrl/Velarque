@@ -960,6 +960,66 @@ body > main {
 .order-status.delivered { background: rgba(76,175,125,0.15); color: #4caf7d; }
 .order-status.pending { background: rgba(212,175,122,0.15); color: var(--accent); }
 .order-status.processing { background: rgba(90,140,220,0.15); color: #5a8cdc; }
+.order-status.cancelled { background: rgba(226,104,92,0.15); color: #e2685c; }
+
+.order-status-select {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.my-order-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  background: var(--bg);
+}
+
+.my-order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.my-order-id {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text);
+}
+
+.my-order-date {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.my-order-items {
+  font-size: 13.5px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.my-order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.my-order-amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--accent);
+}
 
 .empty-state {
   display: none;
