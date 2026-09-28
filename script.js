@@ -59,12 +59,70 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeSignin();
 });
 
+const signupOverlay = document.getElementById('signupOverlay');
+const signupClose = document.getElementById('signupClose');
+const signupForm = document.getElementById('signupForm');
+const signupName = document.getElementById('signupName');
+const signupEmail = document.getElementById('signupEmail');
+const signupNumber = document.getElementById('signupNumber');
+const signupError = document.getElementById('signupError');
+
+const SIGNUPS_KEY = 'velarque_signups';
+
+function getSignups() {
+  try {
+    return JSON.parse(localStorage.getItem(SIGNUPS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSignup(entry) {
+  const signups = getSignups();
+  signups.push(entry);
+  localStorage.setItem(SIGNUPS_KEY, JSON.stringify(signups));
+}
+
+function openSignup() {
+  signupOverlay.classList.add('open');
+  signupError.textContent = '';
+  signupForm.reset();
+  signupName.focus();
+}
+
+function closeSignup() {
+  signupOverlay.classList.remove('open');
+}
+
+signupClose.addEventListener('click', closeSignup);
+signupOverlay.addEventListener('click', (e) => {
+  if (e.target === signupOverlay) closeSignup();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeSignup();
+});
+
+signupForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  saveSignup({
+    name: signupName.value.trim(),
+    email: signupEmail.value.trim(),
+    number: signupNumber.value.trim(),
+  });
+  signupError.style.color = '#4caf7d';
+  signupError.textContent = 'Signed up successfully.';
+  setTimeout(closeSignup, 900);
+});
+
 const heroPage = document.getElementById('heroPage');
 const dashboardPage = document.getElementById('dashboardPage');
 const dashboardLogout = document.getElementById('dashboardLogout');
 const dashboardOwnerName = document.getElementById('dashboardOwnerName');
 const salesStats = document.getElementById('salesStats');
 const ordersTableBody = document.getElementById('ordersTableBody');
+const signupsTableBody = document.getElementById('signupsTableBody');
+const signupsTable = document.getElementById('signupsTable');
+const signupsEmpty = document.getElementById('signupsEmpty');
 
 const SALES_SUMMARY = [
   { label: "Today's Sales", value: '₹8,420' },
@@ -79,6 +137,12 @@ const CUSTOMER_ORDERS = [
   { customer: 'Sanjana Patil', item: 'Ceramic Vase', amount: '₹1,899', status: 'delivered' },
   { customer: 'Devansh Rao', item: 'Handloom Throw', amount: '₹3,199', status: 'pending' },
 ];
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
 
 function renderDashboard() {
   salesStats.innerHTML = SALES_SUMMARY.map((s) => `
@@ -96,6 +160,22 @@ function renderDashboard() {
       <td><span class="order-status ${o.status}">${o.status}</span></td>
     </tr>
   `).join('');
+
+  const signups = getSignups();
+  if (signups.length === 0) {
+    signupsTable.style.display = 'none';
+    signupsEmpty.style.display = 'block';
+  } else {
+    signupsTable.style.display = '';
+    signupsEmpty.style.display = 'none';
+    signupsTableBody.innerHTML = signups.map((s) => `
+      <tr>
+        <td>${escapeHtml(s.name)}</td>
+        <td>${escapeHtml(s.email)}</td>
+        <td>${escapeHtml(s.number)}</td>
+      </tr>
+    `).join('');
+  }
 }
 
 function openDashboard(ownerName) {
@@ -136,6 +216,8 @@ document.querySelectorAll('.dropdown-item').forEach((item) => {
     closeDropdown();
     if (action === 'signin') {
       openSignin();
+    } else if (action === 'signup') {
+      openSignup();
     }
   });
 });

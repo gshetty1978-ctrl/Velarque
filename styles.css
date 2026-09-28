@@ -309,13 +309,15 @@ html, body {
   color: var(--accent);
 }
 
-#signinForm {
+#signinForm,
+#signupForm {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-#signinForm label {
+#signinForm label,
+#signupForm label {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -324,7 +326,8 @@ html, body {
   font-weight: 500;
 }
 
-#signinForm input {
+#signinForm input,
+#signupForm input {
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
@@ -336,7 +339,8 @@ html, body {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-#signinForm input:focus {
+#signinForm input:focus,
+#signupForm input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
@@ -487,6 +491,13 @@ html, body {
 .order-status.delivered { background: rgba(76,175,125,0.15); color: #4caf7d; }
 .order-status.pending { background: rgba(212,175,122,0.15); color: var(--accent); }
 .order-status.processing { background: rgba(90,140,220,0.15); color: #5a8cdc; }
+
+.empty-state {
+  display: none;
+  margin: 10px 2px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
 
 @media (max-width: 720px) {
   .topbar {
