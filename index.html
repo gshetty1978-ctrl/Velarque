@@ -67,8 +67,6 @@
 </header>
 
 <main class="hero" id="heroPage">
-  <p class="hero-sub" id="heroSub">Welcome to Velarque — your search starts above.</p>
-
   <div class="products-grid" id="productsGrid"></div>
   <p class="empty-state" id="productsEmpty" hidden>No products match your search.</p>
 </main>
@@ -207,6 +205,10 @@
             <option value="upi">UPI (mock)</option>
             <option value="card">Card (mock)</option>
           </select>
+        </label>
+        <label>
+          Customization / Additional Instructions
+          <textarea id="checkoutNotes" rows="3" placeholder="e.g. Gift wrap it, add a note saying 'Happy Birthday!'"></textarea>
         </label>
         <div class="cart-total-row">
           <span>Total</span>

@@ -96,6 +96,22 @@ function saveSignup(entry) {
   localStorage.setItem(SIGNUPS_KEY, JSON.stringify(signups));
 }
 
+const ORDERS_KEY = 'velarque_orders';
+
+function getOrders() {
+  try {
+    return JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveOrder(entry) {
+  const orders = getOrders();
+  orders.unshift(entry);
+  localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+}
+
 function findSignupByEmail(email) {
   return getSignups().find((s) => s.email.toLowerCase() === email.toLowerCase());
 }
@@ -158,6 +174,7 @@ signupForm.addEventListener('submit', (e) => {
   });
   signupError.style.color = '#4caf7d';
   signupError.textContent = 'Signed up successfully.';
+  currentUserName = signupName.value.trim();
   setLoggedInMenu('My Orders');
   setTimeout(closeSignup, 900);
 });
@@ -200,11 +217,21 @@ function renderDashboard() {
     </div>
   `).join('');
 
-  ordersTableBody.innerHTML = CUSTOMER_ORDERS.map((o) => `
+  const liveOrders = getOrders().map((o) => ({
+    customer: o.customer,
+    item: o.item,
+    notes: o.notes,
+    amount: `₹${o.amount}`,
+    status: 'pending',
+  }));
+
+  const allOrders = liveOrders.concat(CUSTOMER_ORDERS);
+
+  ordersTableBody.innerHTML = allOrders.map((o) => `
     <tr>
-      <td>${o.customer}</td>
-      <td>${o.item}</td>
-      <td>${o.amount}</td>
+      <td>${escapeHtml(o.customer)}</td>
+      <td>${escapeHtml(o.item)}${o.notes ? `<div class="order-note">Note: ${escapeHtml(o.notes)}</div>` : ''}</td>
+      <td>${escapeHtml(o.amount)}</td>
       <td><span class="order-status ${o.status}">${o.status}</span></td>
     </tr>
   `).join('');
@@ -239,9 +266,7 @@ function closeDashboard() {
   heroPage.hidden = false;
 }
 
-const heroSub = document.getElementById('heroSub');
 const welcomeBanner = document.getElementById('welcomeBanner');
-const HERO_DEFAULT_TEXT = heroSub.textContent;
 
 function showWelcomeBanner(name) {
   welcomeBanner.textContent = `Welcome back, ${name}`;
@@ -249,20 +274,20 @@ function showWelcomeBanner(name) {
 }
 
 function greetCustomer(name) {
-  heroSub.textContent = `Welcome back, ${name}.`;
   showWelcomeBanner(name);
 }
 
 let currentOwner = null;
+let currentUserName = null;
 
 function logOut() {
   currentOwner = null;
+  currentUserName = null;
   closeDashboard();
   closeMyOrders();
   setLoggedOutMenu();
   welcomeBanner.hidden = true;
   welcomeBanner.textContent = '';
-  heroSub.textContent = HERO_DEFAULT_TEXT;
   CART = [];
   updateCartBadge();
   closeCart();
@@ -282,6 +307,7 @@ signinForm.addEventListener('submit', (e) => {
     setTimeout(() => {
       closeSignin();
       currentOwner = user;
+      currentUserName = user;
       showWelcomeBanner(user);
       setLoggedInMenu('Customer Orders');
       openDashboard(user);
@@ -295,6 +321,7 @@ signinForm.addEventListener('submit', (e) => {
     signinError.textContent = `Welcome back, ${account.name}.`;
     setTimeout(() => {
       closeSignin();
+      currentUserName = account.name;
       greetCustomer(account.name);
       setLoggedInMenu('My Orders');
     }, 700);
@@ -566,12 +593,16 @@ function renderCart() {
 
   cartItemsEl.innerHTML = CART.map((c, i) => {
     const p = PRODUCTS[c.productIndex];
+    const sizeOptions = ['S', 'M', 'L'].map((s) =>
+      `<option value="${s}" ${s === c.size ? 'selected' : ''}>${s}</option>`
+    ).join('');
     return `
       <div class="cart-item">
         <img src="${p.image}" alt="${escapeHtml(p.title)}">
         <div class="cart-item-info">
-          <div class="cart-item-title">${escapeHtml(p.title)} <span class="cart-item-size">(${escapeHtml(c.size)})</span></div>
+          <div class="cart-item-title">${escapeHtml(p.title)}</div>
           <div class="cart-item-price">Rs ${p.priceValue} x ${c.qty}</div>
+          <select class="cart-size-select" data-cart-index="${i}" aria-label="Change size">${sizeOptions}</select>
         </div>
         <div class="cart-qty">
           <button data-cart-action="dec" data-cart-index="${i}" aria-label="Decrease quantity">&minus;</button>
@@ -600,6 +631,23 @@ function renderCart() {
       renderCart();
     });
   });
+
+  cartItemsEl.querySelectorAll('.cart-size-select').forEach((select) => {
+    select.addEventListener('change', () => {
+      const i = Number(select.dataset.cartIndex);
+      const item = CART[i];
+      const newSize = select.value;
+      const duplicate = CART.find((c, idx) => idx !== i && c.productIndex === item.productIndex && c.size === newSize);
+      if (duplicate) {
+        duplicate.qty += item.qty;
+        CART.splice(i, 1);
+      } else {
+        item.size = newSize;
+      }
+      updateCartBadge();
+      renderCart();
+    });
+  });
 }
 
 function openCart() {
@@ -622,6 +670,8 @@ const checkoutClose = document.getElementById('checkoutClose');
 const checkoutFormView = document.getElementById('checkoutFormView');
 const checkoutSuccessView = document.getElementById('checkoutSuccessView');
 const checkoutForm = document.getElementById('checkoutForm');
+const checkoutAddress = document.getElementById('checkoutAddress');
+const checkoutNotes = document.getElementById('checkoutNotes');
 const checkoutTotal = document.getElementById('checkoutTotal');
 const checkoutError = document.getElementById('checkoutError');
 const checkoutSubmitBtn = document.getElementById('checkoutSubmitBtn');
@@ -656,7 +706,20 @@ checkoutForm.addEventListener('submit', (e) => {
 
   setTimeout(() => {
     const orderId = 'VLQ-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-    checkoutOrderId.textContent = `Order #${orderId} · Rs ${cartSubtotal()}`;
+    const total = cartSubtotal();
+    const itemSummary = CART.map((c) => `${PRODUCTS[c.productIndex].title} (${c.size}) x${c.qty}`).join(', ');
+
+    saveOrder({
+      orderId,
+      customer: currentUserName || 'Guest',
+      item: itemSummary,
+      amount: total,
+      address: checkoutAddress.value.trim(),
+      notes: checkoutNotes.value.trim(),
+      date: new Date().toISOString(),
+    });
+
+    checkoutOrderId.textContent = `Order #${orderId} · Rs ${total}`;
     checkoutFormView.hidden = true;
     checkoutSuccessView.hidden = false;
     checkoutSubmitBtn.disabled = false;
