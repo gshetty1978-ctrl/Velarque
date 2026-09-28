@@ -1,3 +1,12 @@
+const EMAILJS_PUBLIC_KEY = 'RDwWLNFTZa5esy7tg';
+const EMAILJS_SERVICE_ID = 'service_5dkijgo';
+const EMAILJS_ORDER_PLACED_TEMPLATE_ID = 'template_lcy5kek';
+const EMAILJS_ORDER_CONFIRMED_TEMPLATE_ID = '';
+
+if (window.emailjs) {
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
+
 const toast = document.getElementById('toast');
 let toastTimer = null;
 
@@ -154,6 +163,15 @@ function updateOrderStatus(orderId, status) {
   }
 }
 
+function updateOrderConfirmed(orderId, confirmed) {
+  const orders = getOrders();
+  const order = orders.find((o) => o.orderId === orderId);
+  if (order) {
+    order.confirmed = confirmed;
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+  }
+}
+
 function getOrdersForCustomer(name) {
   return getOrders().filter((o) => o.customer === name);
 }
@@ -221,6 +239,7 @@ signupForm.addEventListener('submit', (e) => {
   signupError.style.color = '#4caf7d';
   signupError.textContent = 'Signed up successfully.';
   currentUserName = signupName.value.trim();
+  currentUserEmail = email;
   setLoggedInMenu('My Orders');
   setTimeout(closeSignup, 900);
 });
@@ -266,10 +285,12 @@ function renderDashboard() {
   const liveOrders = getOrders().map((o) => ({
     orderId: o.orderId,
     customer: o.customer,
+    customerEmail: o.customerEmail,
     item: o.item,
     notes: o.notes,
     amount: `₹${o.amount}`,
     status: o.status || 'pending',
+    confirmed: o.confirmed || false,
     live: true,
   }));
 
@@ -278,6 +299,7 @@ function renderDashboard() {
 
   ordersTableBody.innerHTML = allOrders.map((o) => `
     <tr>
+      <td>${o.live ? `<input type="checkbox" class="order-confirm-check" data-order-id="${escapeHtml(o.orderId)}" ${o.confirmed ? 'checked' : ''}>` : ''}</td>
       <td>${escapeHtml(o.customer)}</td>
       <td>${escapeHtml(o.item)}${o.notes ? `<div class="order-note">Note: ${escapeHtml(o.notes)}</div>` : ''}</td>
       <td>${escapeHtml(o.amount)}</td>
@@ -289,6 +311,39 @@ function renderDashboard() {
         }</td>
     </tr>
   `).join('');
+
+  ordersTableBody.querySelectorAll('.order-confirm-check').forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      if (!checkbox.checked) return;
+      const orderId = checkbox.dataset.orderId;
+      const order = getOrders().find((o) => o.orderId === orderId);
+      if (!order) return;
+
+      if (!EMAILJS_ORDER_CONFIRMED_TEMPLATE_ID) {
+        showToast('Confirmation email template not set up yet');
+        checkbox.checked = false;
+        return;
+      }
+      if (!order.customerEmail) {
+        showToast('No email on file for this order');
+        checkbox.checked = false;
+        return;
+      }
+      if (!confirm(`Send confirmation email to ${order.customer} (${order.customerEmail})?`)) {
+        checkbox.checked = false;
+        return;
+      }
+
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ORDER_CONFIRMED_TEMPLATE_ID, {
+        to_email: order.customerEmail,
+        to_name: order.customer,
+        order_id: order.orderId,
+      }).catch(() => {});
+
+      updateOrderConfirmed(orderId, true);
+      showToast('Confirmation email sent');
+    });
+  });
 
   ordersTableBody.querySelectorAll('.order-status-select').forEach((select) => {
     select.addEventListener('change', () => {
@@ -339,10 +394,12 @@ function greetCustomer(name) {
 
 let currentOwner = null;
 let currentUserName = null;
+let currentUserEmail = null;
 
 function logOut() {
   currentOwner = null;
   currentUserName = null;
+  currentUserEmail = null;
   closeDashboard();
   closeMyOrders();
   setLoggedOutMenu();
@@ -382,6 +439,7 @@ signinForm.addEventListener('submit', (e) => {
     setTimeout(() => {
       closeSignin();
       currentUserName = account.name;
+      currentUserEmail = account.email;
       greetCustomer(account.name);
       setLoggedInMenu('My Orders');
     }, 700);
@@ -619,6 +677,9 @@ if (searchInput) {
 
 let CART = [];
 
+const MAX_QTY_PER_PRODUCT = 4;
+const MAX_ORDERS_PER_DAY = 6;
+
 function getUnitPrice(productIndex, size) {
   const p = PRODUCTS[productIndex];
   if (p.sizePrices && p.sizePrices[size] != null) return p.sizePrices[size];
@@ -628,6 +689,10 @@ function getUnitPrice(productIndex, size) {
 function addToCart(productIndex, size) {
   const existing = CART.find((c) => c.productIndex === productIndex && c.size === size);
   if (existing) {
+    if (existing.qty >= MAX_QTY_PER_PRODUCT) {
+      showToast(`Max ${MAX_QTY_PER_PRODUCT} per product`);
+      return;
+    }
     existing.qty += 1;
   } else {
     CART.push({ productIndex, size, qty: 1 });
@@ -701,7 +766,13 @@ function renderCart() {
     btn.addEventListener('click', () => {
       const i = Number(btn.dataset.cartIndex);
       const action = btn.dataset.cartAction;
-      if (action === 'inc') CART[i].qty += 1;
+      if (action === 'inc') {
+        if (CART[i].qty >= MAX_QTY_PER_PRODUCT) {
+          showToast(`Max ${MAX_QTY_PER_PRODUCT} per product`);
+        } else {
+          CART[i].qty += 1;
+        }
+      }
       else if (action === 'dec') {
         CART[i].qty -= 1;
         if (CART[i].qty <= 0) CART.splice(i, 1);
@@ -767,6 +838,14 @@ function openCheckout() {
   checkoutError.textContent = '';
   checkoutTotal.textContent = `Rs ${cartSubtotal()}`;
   checkoutOverlay.classList.add('open');
+
+  if (ordersPlacedToday() >= MAX_ORDERS_PER_DAY) {
+    checkoutError.style.color = '#e2685c';
+    checkoutError.textContent = "We've reached today's order limit. Please try again tomorrow!";
+    checkoutSubmitBtn.disabled = true;
+  } else {
+    checkoutSubmitBtn.disabled = false;
+  }
 }
 
 function closeCheckout() {
@@ -779,9 +858,42 @@ checkoutOverlay.addEventListener('click', (e) => {
   if (e.target === checkoutOverlay) closeCheckout();
 });
 
+function sendOrderPlacedEmail(orderId, toEmail, toName) {
+  if (!window.emailjs || !toEmail) return;
+
+  const orders = CART.map((c) => {
+    const p = PRODUCTS[c.productIndex];
+    return {
+      item: window.location.origin + '/' + p.image,
+      name: p.title + (c.size ? ` (${c.size})` : ''),
+      units: c.qty,
+      price: getUnitPrice(c.productIndex, c.size) * c.qty,
+    };
+  });
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ORDER_PLACED_TEMPLATE_ID, {
+    to_email: toEmail,
+    to_name: toName || 'there',
+    order_id: orderId,
+    orders,
+  }).catch(() => {});
+}
+
+function ordersPlacedToday() {
+  const todayStr = new Date().toDateString();
+  return getOrders().filter((o) => new Date(o.date).toDateString() === todayStr).length;
+}
+
 checkoutForm.addEventListener('submit', (e) => {
   e.preventDefault();
   checkoutError.textContent = '';
+
+  if (ordersPlacedToday() >= MAX_ORDERS_PER_DAY) {
+    checkoutError.style.color = '#e2685c';
+    checkoutError.textContent = "We've reached today's order limit. Please try again tomorrow!";
+    return;
+  }
+
   checkoutSubmitBtn.disabled = true;
   checkoutSubmitBtn.textContent = 'Processing...';
 
@@ -793,6 +905,7 @@ checkoutForm.addEventListener('submit', (e) => {
     saveOrder({
       orderId,
       customer: currentUserName || 'Guest',
+      customerEmail: currentUserEmail || '',
       item: itemSummary,
       amount: total,
       address: checkoutAddress.value.trim(),
@@ -800,6 +913,8 @@ checkoutForm.addEventListener('submit', (e) => {
       status: 'pending',
       date: new Date().toISOString(),
     });
+
+    sendOrderPlacedEmail(orderId, currentUserEmail, currentUserName);
 
     checkoutOrderId.textContent = `Order #${orderId} · Rs ${total}`;
     checkoutFormView.hidden = true;
