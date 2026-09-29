@@ -87,6 +87,15 @@ const OWNERS = {
   'Ananya': '#lalisa67',
 };
 
+document.querySelectorAll('.password-toggle').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(btn.dataset.target);
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    btn.textContent = showing ? 'Show' : 'Hide';
+  });
+});
+
 const signinOverlay = document.getElementById('signinOverlay');
 const signinClose = document.getElementById('signinClose');
 const signinForm = document.getElementById('signinForm');
@@ -94,10 +103,18 @@ const signinUser = document.getElementById('signinUser');
 const signinPass = document.getElementById('signinPass');
 const signinError = document.getElementById('signinError');
 
+function resetPasswordToggle(inputId) {
+  const input = document.getElementById(inputId);
+  const btn = document.querySelector(`.password-toggle[data-target="${inputId}"]`);
+  input.type = 'password';
+  if (btn) btn.textContent = 'Show';
+}
+
 function openSignin() {
   signinOverlay.classList.add('open');
   signinError.textContent = '';
   signinForm.reset();
+  resetPasswordToggle('signinPass');
   signinUser.focus();
 }
 
@@ -184,6 +201,7 @@ function openSignup() {
   signupOverlay.classList.add('open');
   signupError.textContent = '';
   signupForm.reset();
+  resetPasswordToggle('signupPassword');
   signupName.focus();
 }
 
@@ -260,14 +278,6 @@ const SALES_SUMMARY = [
   { label: "Total Orders", value: '312' },
 ];
 
-const CUSTOMER_ORDERS = [
-  { customer: 'Aarav Deshmukh', item: 'Silk Scarf Set', amount: '₹2,499', status: 'delivered' },
-  { customer: 'Meera Joshi', item: 'Leather Tote', amount: '₹4,850', status: 'processing' },
-  { customer: 'Rohan Kulkarni', item: 'Velvet Cushion Cover', amount: '₹1,299', status: 'pending' },
-  { customer: 'Sanjana Patil', item: 'Ceramic Vase', amount: '₹1,899', status: 'delivered' },
-  { customer: 'Devansh Rao', item: 'Handloom Throw', amount: '₹3,199', status: 'pending' },
-];
-
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
@@ -294,7 +304,7 @@ function renderDashboard() {
     live: true,
   }));
 
-  const allOrders = liveOrders.concat(CUSTOMER_ORDERS);
+  const allOrders = liveOrders;
   const statusOptions = ['pending', 'processing', 'delivered', 'cancelled'];
 
   ordersTableBody.innerHTML = allOrders.map((o) => `
@@ -539,14 +549,6 @@ document.querySelectorAll('.dropdown-item').forEach((item) => {
   });
 });
 
-const footerDate = document.getElementById('footerDate');
-if (footerDate) {
-  footerDate.textContent = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
 
 const PRODUCTS = [
   { tag: 'Notebooks', title: 'Handmade Notebooks', desc: 'Hand-stitched notebooks with floral covers, ready for your next big idea.', price: 'Rs 350', priceValue: 350, weight: 'Each', image: 'images/tile-handmade-notebooks.jpg' },
