@@ -272,11 +272,28 @@ const signupsTableBody = document.getElementById('signupsTableBody');
 const signupsTable = document.getElementById('signupsTable');
 const signupsEmpty = document.getElementById('signupsEmpty');
 
-const SALES_SUMMARY = [
-  { label: "Today's Sales", value: '₹8,420' },
-  { label: "This Month", value: '₹1,64,300' },
-  { label: "Total Orders", value: '312' },
-];
+function computeSalesSummary() {
+  const orders = getOrders();
+  const now = new Date();
+  const todayStr = now.toDateString();
+
+  const todaysSales = orders
+    .filter((o) => new Date(o.date).toDateString() === todayStr)
+    .reduce((sum, o) => sum + o.amount, 0);
+
+  const thisMonthSales = orders
+    .filter((o) => {
+      const d = new Date(o.date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    })
+    .reduce((sum, o) => sum + o.amount, 0);
+
+  return [
+    { label: "Today's Sales", value: `₹${todaysSales.toLocaleString('en-IN')}` },
+    { label: 'This Month', value: `₹${thisMonthSales.toLocaleString('en-IN')}` },
+    { label: 'Total Orders', value: `${orders.length}` },
+  ];
+}
 
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -285,7 +302,7 @@ function escapeHtml(str) {
 }
 
 function renderDashboard() {
-  salesStats.innerHTML = SALES_SUMMARY.map((s) => `
+  salesStats.innerHTML = computeSalesSummary().map((s) => `
     <div class="stat-card">
       <div class="stat-value">${s.value}</div>
       <div class="stat-label">${s.label}</div>
