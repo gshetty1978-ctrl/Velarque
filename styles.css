@@ -356,6 +356,10 @@ body > main {
   margin: 6px 4px;
 }
 
+.hero[hidden] {
+  display: none;
+}
+
 .hero {
   position: relative;
   z-index: 1;
@@ -622,6 +626,35 @@ body > main {
 #signupForm input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.password-wrap {
+  position: relative;
+  display: flex;
+}
+
+.password-wrap input {
+  flex: 1;
+  padding-right: 56px !important;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.password-toggle:hover {
+  text-decoration: underline;
 }
 
 .modal-error {
