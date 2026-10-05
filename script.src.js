@@ -1,5 +1,5 @@
 const EMAILJS_PUBLIC_KEY = 'RDwWLNFTZa5esy7tg';
-const EMAILJS_SERVICE_ID = 'service_5dkijgo';
+const EMAILJS_SERVICE_ID = 'service_z3q2ru8';
 const EMAILJS_ORDER_PLACED_TEMPLATE_ID = 'template_lcy5kek';
 const EMAILJS_ORDER_CONFIRMED_TEMPLATE_ID = 'template_rx66wb9';
 
