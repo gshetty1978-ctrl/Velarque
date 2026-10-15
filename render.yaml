@@ -11,5 +11,5 @@ services:
         destination: /index.html
     headers:
       - path: /*
-        name: X-Frame-Options
-        value: SAMEORIGIN
+        name: Content-Security-Policy
+        value: "frame-ancestors 'self' https://kiaan.onrender.com"
